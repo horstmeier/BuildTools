@@ -9,11 +9,13 @@ public class BuildJsonHandler
 {
     private readonly RepositoryHandler _handler;
     private readonly string _versionPrefix;
+    private readonly Action<string>? _log;
 
-    public BuildJsonHandler(RepositoryHandler handler, string versionPrefix)
+    public BuildJsonHandler(RepositoryHandler handler, string versionPrefix, Action<string>? log)
     {
         _handler = handler;
         _versionPrefix = versionPrefix;
+        _log = log;
     }
 
     public async Task Process(string buildJson)
@@ -37,7 +39,9 @@ public class BuildJsonHandler
             repo,
             defMajor, 
             defMinor);
+        
         var nextVersion = version.NextVersion();
+        _log?.Invoke($"Using version {nextVersion}");
         if (version.Tag == null)
         {
             repo.Tags.Add(_versionPrefix + nextVersion, repo.Head.Tip);
@@ -47,6 +51,7 @@ public class BuildJsonHandler
         foreach (var project in projects)
         {
             var d = Path.Combine(dir.FullName, project);
+            _log?.Invoke($"Processing {d}");
             await VersionWriter.Update(d, nextVersion.ToString(), CancellationToken.None);
         }
     }
@@ -60,7 +65,7 @@ public class RepositoryHandler
     public RepositoryHandler(string releaseBranch, string versionPrefix)
     {
         _versionPrefix = versionPrefix;
-        _releaseBranch = new Regex(releaseBranch);
+        _releaseBranch = new Regex(releaseBranch, RegexOptions.IgnoreCase);
     }
     
     public GitVersionInfo VersionInfoFromRepository(Repository repository, int defMajor, int defMinor)
@@ -69,10 +74,12 @@ public class RepositoryHandler
         var branchName = repository.Head.FriendlyName ?? headSha;
         var releaseMatch = _releaseBranch.Match(branchName);
         var (major, minor, prerelease) = releaseMatch.Success
-            ? (int.Parse(releaseMatch.Groups["major"].Value), int.Parse(releaseMatch.Groups["minor"].Value), "")
+            ? (int.Parse(releaseMatch.Groups["Major"].Value), int.Parse(releaseMatch.Groups["Minor"].Value), "")
             : (defMajor, defMinor, "-" + branchName);
 
-        var versionTagExpression = new Regex($@"{_versionPrefix}{major}\.{minor}{prerelease}\.(?<build>\d+)");
+        var versionTagExpression = new Regex(
+            $@"{_versionPrefix}{major}\.{minor}{prerelease}\.(?<build>\d+)",
+            RegexOptions.IgnoreCase);
 
         var tags =
             from tag in repository.Tags

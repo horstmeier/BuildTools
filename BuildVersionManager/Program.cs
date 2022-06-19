@@ -16,11 +16,9 @@ var app = CoconaApp.Create(); // is a shorthand for `CoconaApp.CreateBuilder().B
 
 app.AddCommand("increment", ([Argument] string build) =>
 {
-    var handler = new BuildJsonHandler(repositoryHandler, versionStringPrefix);
+    var handler = new BuildJsonHandler(repositoryHandler, versionStringPrefix, Console.WriteLine);
     handler.Process(build).Wait();
 });
 
 
 app.Run();
-
-Console.WriteLine(repositoryHandler.VersionInfoFromRepository(repo, 1, 0).NextVersion());
