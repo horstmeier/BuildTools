@@ -23,3 +23,7 @@ jobs:
       run: dotnet build --no-restore
     - name: Pack
       run: dotnet pack -c Release
+    - name: Publish Nuget to GitHub registry
+      run: dotnet nuget push ./BuildVersionManager/nupkg/*.nupkg -k ${GITHUB_TOKEN} -s https://nuget.pkg.github.com/<organization>/index.json --skip-duplicate --no-symbols 
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
