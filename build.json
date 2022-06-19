@@ -1,6 +1,6 @@
-﻿{
+{
   "Major": 0,
-  "Minor": 1,
+  "Minor": 6,
   "Projects": [
     "BuildVersionManager/BuildVersionManager.csproj"
   ]
