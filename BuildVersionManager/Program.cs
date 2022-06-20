@@ -5,9 +5,6 @@ using LibGit2Sharp;
 
 var versionStringPrefix = "Version-";
 
-var repoLocation = Repository.Discover("C:\\src\\VersionManager");
-if (repoLocation == null) throw new Exception("Not a git repository");
-var repo = new Repository(repoLocation);
 var repositoryHandler = new RepositoryHandler(@"Release/(?<Major>\d+)\.(?<Minor>\d+)",
     versionStringPrefix);
 
