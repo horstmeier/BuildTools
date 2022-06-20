@@ -45,9 +45,9 @@ public class RepositoryHandler
             let build = int.Parse(match.Groups["build"].Value) 
             select (tag, build);
 
-        var buildNo = 0;
+        var buildNo = -1;
         Tag? buildTag = null;
-
+        
         foreach (var t in tags)
         {
             if (t.tag.Target.Sha.InvariantEquals(headSha))
