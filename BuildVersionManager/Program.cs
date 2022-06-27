@@ -1,15 +1,16 @@
 ﻿
+using System.Text.RegularExpressions;
 using BuildVersionManager;
 using Cocona;
 using LibGit2Sharp;
 
 var versionStringPrefix = "Version-";
 
-var repoLocation = Repository.Discover("C:\\src\\VersionManager");
-if (repoLocation == null) throw new Exception("Not a git repository");
-var repo = new Repository(repoLocation);
-var repositoryHandler = new RepositoryHandler(@"Release/(?<Major>\d+)\.(?<Minor>\d+)",
-    versionStringPrefix);
+var repositoryHandler = new RepositoryHandler(@"Release/(?<Tag>.*-){0,1}(?<Major>\d+)\.(?<Minor>\d+)",
+    (major, minor, prerelease, releaseTag) =>
+        releaseTag == null
+            ? $@"Version-{major}\.{minor}{Regex.Escape(prerelease)}\.(?<Build>\d+)"
+            : $@"Version-{Regex.Escape(releaseTag)}{major}\.{minor}{Regex.Escape(prerelease)}\.(?<Build>\d+)");
 
 var app = CoconaApp.Create(); // is a shorthand for `CoconaApp.CreateBuilder().Build()`
 

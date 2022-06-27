@@ -94,7 +94,7 @@ public class BuildJsonHandler
         _log?.Invoke($"Using version {nextVersion}");
         if (version.Tag == null)
         {
-            repo.Tags.Add(_versionPrefix + nextVersion, repo.Head.Tip);
+            repo.Tags.Add( nextVersion.GetVersionTag(), repo.Head.Tip);
         }
         var dir = buildFile.Directory
                   ?? throw new Exception("Failed to read directory");
@@ -104,7 +104,7 @@ public class BuildJsonHandler
         {
             var d = Path.Combine(dir.FullName, project);
             _log?.Invoke($"Processing {d}");
-            await VersionWriter.Update(d, nextVersion.ToString(), CancellationToken.None);
+            await VersionWriter.Update(d, nextVersion.GetVersionString(), CancellationToken.None);
         }
     }
 }

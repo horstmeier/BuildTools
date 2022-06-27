@@ -5,10 +5,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>version</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-    <Version>0.6.2</Version>
+    <Version>0.7.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Cocona" Version="2.0.3" />

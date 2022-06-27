@@ -6,12 +6,12 @@ namespace BuildVersionManager;
 
 public class RepositoryHandler
 {
-    private readonly string _versionPrefix;
+    private readonly Func<int, int, string, string?, string>  _versionTagExpression;
     private readonly Regex _releaseBranch;
 
-    public RepositoryHandler(string releaseBranch, string versionPrefix)
+    public RepositoryHandler(string releaseBranch, Func<int, int, string, string?, string> versionTagExpression)
     {
-        _versionPrefix = versionPrefix;
+        _versionTagExpression = versionTagExpression;
         _releaseBranch = new Regex(releaseBranch, RegexOptions.IgnoreCase);
     }
     
@@ -30,24 +30,25 @@ public class RepositoryHandler
         var headSha = repository.Head.Tip.Sha;
         var branchName = repository.Head.FriendlyName ?? headSha;
         var releaseMatch = _releaseBranch.Match(branchName);
-        var (major, minor, prerelease) = releaseMatch.Success
-            ? (int.Parse(releaseMatch.Groups["Major"].Value), int.Parse(releaseMatch.Groups["Minor"].Value), "")
-            : (defMajor, defMinor, "-" + branchName);
+        var (major, minor, prerelease, releaseTag) = releaseMatch.Success
+            ? (int.Parse(releaseMatch.Groups["Major"].Value), int.Parse(releaseMatch.Groups["Minor"].Value), "", 
+                releaseMatch.Groups["Tag"].Value)
+            : (defMajor, defMinor, "-" + branchName, null);
 
         var versionTagExpression = new Regex(
-            $@"{_versionPrefix}{major}\.{minor}{prerelease}\.(?<build>\d+)",
+            _versionTagExpression(major, minor, prerelease, releaseTag),
             RegexOptions.IgnoreCase);
 
         var tags =
             from tag in repository.Tags
             let match = versionTagExpression.Match(tag.FriendlyName)
             where match.Success
-            let build = int.Parse(match.Groups["build"].Value) 
+            let build = int.Parse(match.Groups["Build"].Value) 
             select (tag, build);
 
-        var buildNo = 0;
+        var buildNo = -1;
         Tag? buildTag = null;
-
+        
         foreach (var t in tags)
         {
             if (t.tag.Target.Sha.InvariantEquals(headSha))
@@ -63,7 +64,7 @@ public class RepositoryHandler
             }
         }
 
-        return new GitVersionInfo(major, minor, prerelease, buildNo, buildTag);
+        return new GitVersionInfo(major, minor, prerelease, buildNo, buildTag, releaseTag);
 
     }
 }
