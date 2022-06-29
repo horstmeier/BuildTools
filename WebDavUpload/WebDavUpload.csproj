@@ -9,7 +9,7 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <RuntimeIdentifiers>win10-x64;debian.11-x64</RuntimeIdentifiers>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>webdavupload</ToolCommandName>
+    <ToolCommandName>webdav</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <Version>0.7.1</Version>
   </PropertyGroup>
