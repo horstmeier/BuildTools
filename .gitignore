@@ -17,6 +17,7 @@ a.xml
 mono_crash.*
 
 # Build results
+\.[Vv]scode
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
