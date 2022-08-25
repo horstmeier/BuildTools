@@ -11,7 +11,8 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>version</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-    <Version>0.9-DUPI56.0</Version>
+    <Version>0.10.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Cocona" Version="2.0.3" />
