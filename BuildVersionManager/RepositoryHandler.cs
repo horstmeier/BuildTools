@@ -25,6 +25,17 @@ public class RepositoryHandler
         return new Repository(repoLocation);
     }
 
+    private string ReleaseTagFromBranchName(string branchName)
+    {
+        var lastName = branchName.Split('/').Last();
+        var regex = new Regex(@"^\w+-\d+-");
+        var match = regex.Match(lastName);
+        return match.Success
+            ? match.Value.Replace("-", "")
+            : string.Concat(branchName.Where(it => Char.IsLetter(it) || Char.IsDigit(it)));
+
+    }
+    
     public GitVersionInfo VersionInfoFromRepository(Repository repository, int defMajor, int defMinor)
     {
         var headSha = repository.Head.Tip.Sha;
@@ -33,7 +44,7 @@ public class RepositoryHandler
         var (major, minor, prerelease, releaseTag) = releaseMatch.Success
             ? (int.Parse(releaseMatch.Groups["Major"].Value), int.Parse(releaseMatch.Groups["Minor"].Value), "", 
                 releaseMatch.Groups["Tag"].Value)
-            : (defMajor, defMinor, "-" + branchName, null);
+            : (defMajor, defMinor, "-" + ReleaseTagFromBranchName(branchName), null);
 
         var versionTagExpression = new Regex(
             _versionTagExpression(major, minor, prerelease, releaseTag),

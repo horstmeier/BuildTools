@@ -6,7 +6,7 @@ using LibGit2Sharp;
 
 var versionStringPrefix = "Version-";
 
-var repositoryHandler = new RepositoryHandler(@"Release/(?<Tag>.*-){0,1}(?<Major>\d+)\.(?<Minor>\d+)",
+var repositoryHandler = new RepositoryHandler(@"release/(?<Tag>.*-){0,1}(?<Major>\d+)\.(?<Minor>\d+)",
     (major, minor, prerelease, releaseTag) =>
         releaseTag == null
             ? $@"Version-{major}\.{minor}{Regex.Escape(prerelease)}\.(?<Build>\d+)"
